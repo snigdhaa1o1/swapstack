@@ -6,6 +6,8 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Matches from "./pages/Matches";
+import Search from "./pages/Search";
+import UserProfile from "./pages/UserProfile";
 
 function App() {
   return (
@@ -23,6 +25,10 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         
         <Route path="/matches" element={<Matches />} />
+
+        <Route path="/search" element={<Search />} />
+
+        <Route path="/u/:username" element={<UserProfile />} />
 
       </Routes>
     </BrowserRouter>

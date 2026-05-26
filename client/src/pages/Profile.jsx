@@ -1,7 +1,14 @@
 import { useState } from "react";
+import axios from "axios";
+
 import SkillTag from "../components/shared/SkillTag";
 
 function Profile() {
+
+  const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
+  const [bio, setBio] = useState("");
+  const [availability, setAvailability] = useState("");
 
   const [skillsHave, setSkillsHave] = useState([
     "React",
@@ -15,6 +22,9 @@ function Profile() {
 
   const [haveInput, setHaveInput] = useState("");
   const [wantInput, setWantInput] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
   // Add Skill Have
   const handleAddHaveSkill = (e) => {
@@ -50,6 +60,42 @@ function Profile() {
     );
   };
 
+  // Save Profile
+  const handleSaveProfile = async () => {
+    try {
+
+      setLoading(true);
+      setMessage("");
+
+      const response = await axios.post(
+        "http://localhost:5000/api/users/create",
+        {
+          fullName,
+          username,
+          bio,
+          skillsHave,
+          skillsWant,
+          availability,
+        }
+      );
+
+      setMessage("Profile saved successfully 🚀");
+
+      console.log(response.data);
+
+    } catch (error) {
+
+      console.log(error);
+
+      setMessage("Something went wrong");
+
+    } finally {
+
+      setLoading(false);
+
+    }
+  };
+
   return (
     <div className="min-h-screen bg-zinc-50 p-8">
 
@@ -80,9 +126,39 @@ function Profile() {
 
             <input
               type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
               placeholder="Enter your full name"
               className="w-full mt-2 border border-zinc-300 rounded-xl px-4 py-3 outline-none focus:border-black transition"
             />
+
+          </div>
+
+
+          {/* Username */}
+          <div>
+
+            <label className="text-sm font-medium">
+              Username
+            </label>
+
+            <input
+              type="text"
+              value={username}
+              onChange={(e) =>
+                setUsername(
+                  e.target.value
+                    .toLowerCase()
+                    .replace(/\s/g, "")
+                )
+              }
+              placeholder="@snigdha"
+              className="w-full mt-2 border border-zinc-300 rounded-xl px-4 py-3 outline-none focus:border-black transition"
+            />
+
+            <p className="text-xs text-zinc-500 mt-2">
+              This will be your unique identity on SwapStack.
+            </p>
 
           </div>
 
@@ -95,13 +171,15 @@ function Profile() {
 
             <textarea
               rows="4"
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
               placeholder="Tell others about yourself..."
               className="w-full mt-2 border border-zinc-300 rounded-xl px-4 py-3 outline-none focus:border-black transition resize-none"
             />
 
           </div>
 
-          {/* Skills You Have */}
+          {/* Skills Have */}
           <div>
 
             <label className="text-sm font-medium">
@@ -131,7 +209,7 @@ function Profile() {
 
           </div>
 
-          {/* Skills You Want */}
+          {/* Skills Want */}
           <div>
 
             <label className="text-sm font-medium">
@@ -168,8 +246,13 @@ function Profile() {
               Availability
             </label>
 
-            <select className="w-full mt-2 border border-zinc-300 rounded-xl px-4 py-3 outline-none focus:border-black transition">
+            <select
+              value={availability}
+              onChange={(e) => setAvailability(e.target.value)}
+              className="w-full mt-2 border border-zinc-300 rounded-xl px-4 py-3 outline-none focus:border-black transition"
+            >
 
+              <option value="">Select Availability</option>
               <option>1-2 Hours / Week</option>
               <option>3-5 Hours / Week</option>
               <option>5+ Hours / Week</option>
@@ -179,9 +262,19 @@ function Profile() {
           </div>
 
           {/* Save Button */}
-          <button className="bg-black text-white px-6 py-3 rounded-xl font-medium hover:opacity-90 transition">
-            Save Profile
+          <button
+            onClick={handleSaveProfile}
+            className="bg-black text-white px-6 py-3 rounded-xl font-medium hover:opacity-90 transition"
+          >
+            {loading ? "Saving..." : "Save Profile"}
           </button>
+
+          {/* Message */}
+          {message && (
+            <p className="text-sm font-medium text-green-600">
+              {message}
+            </p>
+          )}
 
         </div>
 
